@@ -40,6 +40,17 @@ test.describe('Gestão de Trabalhos', () => {
       
       // Valida que o erro aparece
       await expect(page.getByText('A descrição é obrigatória.')).toBeVisible();
+    test('exibe erro ao salvar trabalho sem descrição', async ({ page }) => {
+        await page.goto('https://studylab.free.laravel.cloud/login');
+
+        await page.getByRole('link', { name: 'Trabalhos', exact: true }).click();
+        await page.getByRole('button', { name: 'Editar' }).first().click();
+
+        await page.getByRole('textbox', { name: 'Ex: Pesquisa de História...' }).fill('');
+        await page.getByRole('button', { name: 'Salvar Trabalho' }).click();
+
+        await expect(page.getByText('A descrição é obrigatória.')).toBeVisible();
+});       
     });
   });
 });
@@ -47,18 +58,6 @@ test.describe('Gestão de Trabalhos', () => {
 const dataFutura = () => '2026-12-12';
 
 test.describe.serial('Casos de Borda - Trabalhos', () => {
-
-  // O beforeAll garante que o login seja feito apenas uma vez antes dos testes
-  test.beforeAll(async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('link', { name: 'Entrar' }).click();
-    await page.getByRole('textbox', { name: 'nome@exemplo.com' }).fill('gabrielgirao760@gmail.com');
-    await page.getByRole('textbox', { name: '••••••••' }).fill('12345678gG');
-    await page.getByRole('button', { name: 'Entrar na plataforma' }).click();
-    
-    // Opcional: Aguardar o carregamento da dashboard ou página inicial logada
-    await expect(page).toHaveURL(/.*dashboard/); 
-  });
 
   test('Cadastrar trabalho com descrição de 1 caractere', async ({ page }) => {
     await page.goto('/works');
