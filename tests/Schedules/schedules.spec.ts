@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 test.describe('Casos Felizes', () => {
-
 test('deve criar e editar um horário com sucesso', async ({ page }) => {
   await page.goto('https://studylab.free.laravel.cloud/');
   
