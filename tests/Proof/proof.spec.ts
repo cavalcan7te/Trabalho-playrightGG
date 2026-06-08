@@ -57,6 +57,8 @@ test('exibe erro ao editar prova sem matéria', async ({ page }) => {
   await page.getByRole('button', { name: 'Salvar alterações' }).click();
 
   await expect(page.getByText('Informe uma matéria (máx 40 char)')).toBeVisible();
+test.describe.serial('Casos de Borda - Trabalhos', () => {
+
 }); 
 });
 });
