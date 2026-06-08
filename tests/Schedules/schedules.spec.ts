@@ -1,0 +1,25 @@
+import { test, expect } from '@playwright/test';
+
+test('deve criar e editar um horário com sucesso', async ({ page }) => {
+  await page.goto('https://studylab.free.laravel.cloud/');
+  
+  // 1. Criar novo horário
+  await page.getByRole('link', { name: 'Horários', exact: true }).click();
+  await page.getByRole('button', { name: 'Adicionar horário' }).click();
+  
+  await page.getByRole('textbox', { name: /Ex: Grade/ }).fill('Teste de Horário');
+  await page.locator('.w-6.h-6.text-pink-500').click();
+  await page.setInputFiles('input[type="file"]', '1000_F_200662748_nJZc35hg1jv0WoXxxSsLDheLfhZo1arf.jpg');
+  await page.getByRole('button', { name: 'Enviar horário' }).click();
+
+  // Validação: Verificar se a mensagem de sucesso aparece
+  await expect(page.getByText('Horário enviado com sucesso!')).toBeVisible();
+
+  // 2. Editar horário existente
+  await page.locator('.w-7').first().click();
+  await page.locator('#editTitle').fill('Teste de Horário Editado');
+  await page.getByRole('button', { name: 'Salvar' }).click();
+
+  // Validação: Verificar se a atualização foi concluída
+  await expect(page.getByText('Horário atualizado!')).toBeVisible();
+});
