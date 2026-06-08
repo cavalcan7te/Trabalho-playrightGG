@@ -25,7 +25,32 @@ test('deve criar e editar um horário com sucesso', async ({ page }) => {
   await expect(page.getByText('Horário atualizado!')).toBeVisible();
  });
 test.describe('Casos Tristes', () => {
+test('não deve criar horário sem imagem', async ({ page }) => {
+  await page.getByRole('link', { name: 'Horários' }).click();
+  await page.getByRole('button', { name: 'Adicionar horário' }).click();
 
+  await page.getByRole('textbox').fill('Teste');
+  await page.getByRole('button', { name: 'Enviar horário' }).click();
+
+  await expect(
+    page.getByText('Selecione uma imagem.')
+  ).toBeVisible();
+});
+
+test('não deve salvar planner vazio', async ({ page }) => {
+  await page.getByRole('link', { name: 'Horários' }).click();
+  await page.locator('.w-7').first().click();
+
+  await page.getByRole('link', { name: 'Novo Planner' }).click();
+  await page.getByRole('button', { name: 'Salvar Planner' }).click();
+
+  await expect(
+    page.getByText('O planner está vazio!')
+  ).toBeVisible();
+});
+test.describe.serial('Casos de Borda - Trabalhos', () => {
+
+});
 });
 });
 });
