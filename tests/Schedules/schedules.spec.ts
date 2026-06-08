@@ -48,7 +48,36 @@ test('não deve salvar planner vazio', async ({ page }) => {
   ).toBeVisible();
 });
 test.describe.serial('Casos de Borda - Trabalhos', () => {
+test('não deve permitir título acima do limite de caracteres', async ({ page }) => {
+  await page.goto('https://studylab.free.laravel.cloud/');
 
+  await page.getByRole('link', { name: 'Horários' }).click();
+  await page.getByRole('button', { name: 'Adicionar horário' }).click();
+
+  await page.getByRole('textbox').fill('a'.repeat(1001));
+
+  await page.locator('input[type="file"]').setInputFiles('download (3).jpg');
+
+  await page.getByRole('button', { name: 'Enviar horário' }).click();
+
+  await expect(
+    page.getByText('O título pode ter no máximo')
+  ).toBeVisible();
+});
+test('não deve permitir editar com título acima do limite', async ({ page }) => {
+  await page.goto('https://studylab.free.laravel.cloud/');
+
+  await page.getByRole('link', { name: 'Horários' }).click();
+  await page.locator('.w-7').first().click();
+
+  await page.locator('#editTitle').fill('a'.repeat(1001));
+
+  await page.getByRole('button', { name: 'Salvar' }).click();
+
+  await expect(
+    page.getByText('Erro ao atualizar.')
+  ).toBeVisible();
+});
 });
 });
 });
