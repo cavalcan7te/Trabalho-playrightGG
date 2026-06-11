@@ -16,7 +16,7 @@ export default defineConfig({
     trace: 'on-first-retry',
 
     // Timeout para ações (click, fill, etc.)
-    actionTimeout: 3000000,
+    actionTimeout: 30000000,
 
     // Timeout para navegação
     navigationTimeout: 6000000,

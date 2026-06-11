@@ -2,13 +2,17 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://studylab.free.laravel.cloud/dashboard');
+  await page.waitForLoadState('networkidle');
 });
 
-test.describe('Casos Felizes', () => {
+test.describe('Boletim', () => {
 
   test('deve criar uma nota com sucesso', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
+
+    await expect(
+      page.getByRole('button', { name: 'Nova nota' }).first()
+    ).toBeVisible();
 
     await page.getByRole('button', { name: 'Nova nota' }).first().click();
 
@@ -19,33 +23,35 @@ test.describe('Casos Felizes', () => {
 
     await page.getByRole('button', { name: 'Salvar nota' }).first().click();
 
-    await page.screenshot({ path: 'erro.png', fullPage: true });
+    await page.screenshot({
+      path: 'screenshots/criar-nota.png',
+      fullPage: true
+    });
   });
 
   test('deve editar o boletim existente com sucesso', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
     const editarBoletim = page.locator('.w-7').first();
 
     await expect(editarBoletim).toBeVisible({ timeout: 10000 });
+
     await editarBoletim.click();
 
     await page.locator('#gradeModalMidterm').fill('2');
 
-    await page.getByRole('button', { name: 'Salvar alterações' })
+    await page
+      .getByRole('button', { name: 'Salvar alterações' })
       .first()
       .click();
 
-  await page.screenshot({ path: 'erro.png', fullPage: true });
+    await page.screenshot({
+      path: 'screenshots/editar-boletim.png',
+      fullPage: true
+    });
   });
 
-});
-
-test.describe('Casos Tristes / Validações', () => {
-
   test('não deve salvar nota se o bimestre não for selecionado', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
     await page.getByRole('button', { name: 'Nova nota' }).first().click();
@@ -62,14 +68,18 @@ test.describe('Casos Tristes / Validações', () => {
   });
 
   test('não deve permitir salvar ano fora do intervalo permitido', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
-    await page.locator('.w-7').first().click({ timeout: 100000000 });
+    const editarBoletim = page.locator('.w-7').first();
 
-    await page.getByPlaceholder('2026').fill('');
+    await expect(editarBoletim).toBeVisible({ timeout: 10000 });
 
-    await page.getByRole('button', { name: 'Salvar alterações' })
+    await editarBoletim.click();
+
+    await page.getByPlaceholder('2026').clear();
+
+    await page
+      .getByRole('button', { name: 'Salvar alterações' })
       .first()
       .click();
 
@@ -78,20 +88,15 @@ test.describe('Casos Tristes / Validações', () => {
     ).toBeVisible();
   });
 
-});
-
-test.describe.serial('Casos de Borda - Boletim', () => {
-
   test('exibe erro ao salvar nota com valor acima do permitido', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
     await page.getByRole('button', { name: 'Nova nota' }).first().click();
 
-    await page.locator('#gradeModalEndterm').fill('222');
-    await page.locator('#gradeModalMidterm').fill('222');
-    await page.locator('#gradeModalBimester').selectOption('3');
     await page.locator('#gradeModalSubjectId').selectOption('325');
+    await page.locator('#gradeModalBimester').selectOption('3');
+    await page.locator('#gradeModalMidterm').fill('222');
+    await page.locator('#gradeModalEndterm').fill('222');
 
     await page.getByRole('button', { name: 'Salvar nota' }).first().click();
 
