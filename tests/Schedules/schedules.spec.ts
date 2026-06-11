@@ -1,9 +1,13 @@
 import { test, expect } from '@playwright/test';
 
+test.beforeEach(async ({ page }) => {
+  await page.goto('https://studylab.free.laravel.cloud/dashboard');
+  await page.waitForLoadState('networkidle');
+});
+
 test.describe('Casos Felizes', () => {
 
-  test('deve criar um horário com sucesso', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/');
+test('deve criar um horário com sucesso', async ({ page }) => {
 
     await page.getByRole('link', { name: 'Horários', exact: true })
       .first()
@@ -33,7 +37,6 @@ test.describe('Casos Felizes', () => {
   });
 
   test('edita horário com sucesso', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/');
 
     await page.getByRole('link', { name: 'Horários', exact: true })
       .first()
@@ -58,7 +61,6 @@ test.describe('Casos Felizes', () => {
 test.describe('Casos Tristes', () => {
 
   test('não deve criar horário sem imagem', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/');
 
     await page.getByRole('link', { name: 'Horários' })
       .first()
@@ -82,7 +84,6 @@ test.describe('Casos Tristes', () => {
   });
 
   test('não deve salvar planner vazio', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/');
 
     await page.getByRole('link', { name: 'Horários' })
       .first()
@@ -108,7 +109,6 @@ test.describe('Casos Tristes', () => {
 test.describe.serial('Casos de Borda - Horários', () => {
 
   test('não deve permitir título acima do limite de caracteres', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/');
 
     await page.getByRole('link', { name: 'Horários' })
       .first()
@@ -135,7 +135,6 @@ test.describe.serial('Casos de Borda - Horários', () => {
   });
 
   test('não deve permitir editar com título acima do limite', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/');
 
     await page.getByRole('link', { name: 'Horários' })
       .first()

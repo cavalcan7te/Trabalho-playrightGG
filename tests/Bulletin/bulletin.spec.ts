@@ -5,7 +5,7 @@ test.beforeEach(async ({ page }) => {
   await page.waitForLoadState('networkidle');
 });
 
-test.describe('Boletim', () => {
+test.describe('Casos felizes', () => {
 
   test('deve criar uma nota com sucesso', async ({ page }) => {
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
@@ -50,7 +50,8 @@ test.describe('Boletim', () => {
       fullPage: true
     });
   });
-
+});
+test.describe('Casos tristes', () => {
   test('não deve salvar nota se o bimestre não for selecionado', async ({ page }) => {
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
@@ -87,6 +88,9 @@ test.describe('Boletim', () => {
       page.getByText('Ano entre 2000 e')
     ).toBeVisible();
   });
+  });
+
+test.describe('Casos de bordas', () => {
 
   test('exibe erro ao salvar nota com valor acima do permitido', async ({ page }) => {
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();

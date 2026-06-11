@@ -2,14 +2,16 @@ import { test, expect } from '@playwright/test';
 
 test.beforeEach(async ({ page }) => {
   await page.goto('https://studylab.free.laravel.cloud/dashboard');
+  await page.waitForLoadState('networkidle');
 });
 
 test.describe('Casos Felizes', () => {
 
   test('cadastra prova com sucesso', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/login');
-
     await page.getByRole('link', { name: 'Provas', exact: true }).first().click();
+
+    // Garante que a prova será criada em uma semana futura
+    await page.locator('#nextWeek').click();
 
     await page.getByRole('button', { name: 'Adicionar' })
       .first()
@@ -22,17 +24,17 @@ test.describe('Casos Felizes', () => {
 
     await page.getByRole('button', { name: 'Salvar prova' })
       .first()
-      .click({ timeout: 1000000 });
+      .click();
 
     await expect(
       page.getByText('Prova cadastrada! ✓')
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test('edita prova com sucesso', async ({ page }) => {
-    await page.goto('https://studylab.free.laravel.cloud/login');
-
     await page.getByRole('link', { name: 'Provas', exact: true }).first().click();
+
+    await page.locator('#nextWeek').click();
 
     await page.locator('#calBody')
       .getByText('Prova Final')
@@ -45,11 +47,11 @@ test.describe('Casos Felizes', () => {
 
     await page.getByRole('button', { name: 'Salvar alterações' })
       .first()
-      .click({ timeout: 1000000 });
+      .click();
 
     await expect(
       page.getByText('Prova atualizada! ✓')
-    ).toBeVisible();
+    ).toBeVisible({ timeout: 10000 });
   });
 
 });
@@ -57,7 +59,6 @@ test.describe('Casos Felizes', () => {
 test.describe('Casos Tristes / Validações', () => {
 
   test('exibe erro ao cadastrar prova sem matéria', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Provas', exact: true }).first().click();
 
     await page.locator('#nextWeek').click();
@@ -70,7 +71,7 @@ test.describe('Casos Tristes / Validações', () => {
 
     await page.getByRole('button', { name: 'Salvar prova' })
       .first()
-      .click({ timeout: 1000000 });
+      .click();
 
     await expect(
       page.getByText('Informe uma matéria (máx 40 char)')
@@ -78,7 +79,6 @@ test.describe('Casos Tristes / Validações', () => {
   });
 
   test('exibe erro ao editar prova sem matéria', async ({ page }) => {
-
     await page.getByRole('link', { name: 'Provas', exact: true }).first().click();
 
     await page.locator('#nextWeek').click();
@@ -92,7 +92,7 @@ test.describe('Casos Tristes / Validações', () => {
 
     await page.getByRole('button', { name: 'Salvar alterações' })
       .first()
-      .click({ timeout: 1000000 });
+      .click();
 
     await expect(
       page.getByText('Informe uma matéria (máx 40 char)')
@@ -103,6 +103,29 @@ test.describe('Casos Tristes / Validações', () => {
 
 test.describe.serial('Casos de Borda - Trabalhos', () => {
 
-  // Adicione seus casos de borda aqui
+  test('não deve permitir matéria acima do limite', async ({ page }) => {
+    await page.getByRole('link', { name: 'Provas', exact: true }).first().click();
+
+    await page.locator('#nextWeek').click();
+
+    await page.getByRole('button', { name: 'Adicionar' })
+      .first()
+      .click();
+
+    await page.locator('#modalType').selectOption('Prova Final');
+    await page.locator('#modalDesc').selectOption('__outro__');
+
+    await page
+      .locator('#modalCustomSubject')
+      .fill('a'.repeat(41));
+
+    await page.getByRole('button', { name: 'Salvar prova' })
+      .first()
+      .click();
+
+    await expect(
+      page.getByText('Informe uma matéria (máx 40 char)')
+    ).toBeVisible();
+  });
 
 });
