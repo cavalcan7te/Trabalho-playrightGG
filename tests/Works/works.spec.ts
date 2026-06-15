@@ -1,6 +1,5 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('Gestão de Trabalhos', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto('https://studylab.free.laravel.cloud/dashboard');
@@ -98,19 +97,23 @@ test.describe('Gestão de Trabalhos', () => {
 
   });
 
-});
 
 const dataFutura = () => '2026-12-12';
 
 test.describe.serial('Casos de Borda - Trabalhos', () => {
 
   test('Cadastrar trabalho com descrição de 1 caractere', async ({ page }) => {
-    await page.goto('/works');
+
+    await page.getByRole('link', { name: 'Trabalhos', exact: true })
+      .first()
+      .click();
 
     await page
       .getByRole('button', { name: 'Novo trabalho' })
       .first()
       .click();
+
+    await expect(page.locator('#workType')).toBeVisible();
 
     await page.locator('#workType').selectOption('Artigo');
 
@@ -127,22 +130,29 @@ test.describe.serial('Casos de Borda - Trabalhos', () => {
 
     await expect(
       page.getByText('Trabalho criado com sucesso!')
-    ).toBeVisible({ timeout: 100000 });
+    ).toBeVisible({ timeout: 10000 });
   });
 
   test('Cadastrar trabalho com descrição no limite máximo de caracteres', async ({ page }) => {
-    await page.goto('/works');
+
+    await page.getByRole('link', { name: 'Trabalhos', exact: true })
+      .first()
+      .click();
 
     await page
       .getByRole('button', { name: 'Novo trabalho' })
       .first()
       .click();
 
+    await expect(page.locator('#workType')).toBeVisible();
+
     await page.locator('#workType').selectOption('Artigo');
+
+    const descricao = 'a'.repeat(500);
 
     await page
       .getByRole('textbox', { name: 'Ex: Pesquisa de História...' })
-      .fill('a'.repeat(500));
+      .fill(descricao);
 
     await page.locator('#workDueDate').fill(dataFutura());
 

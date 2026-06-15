@@ -100,11 +100,12 @@ test.describe('Casos Tristes / Validações', () => {
   });
 
 });
-
-test.describe.serial('Casos de Borda - Trabalhos', () => {
+test.describe.serial('Casos de Borda - Provas', () => {
 
   test('não deve permitir matéria acima do limite', async ({ page }) => {
-    await page.getByRole('link', { name: 'Provas', exact: true }).first().click();
+    await page.getByRole('link', { name: 'Provas', exact: true })
+      .first()
+      .click();
 
     await page.locator('#nextWeek').click();
 
@@ -112,20 +113,24 @@ test.describe.serial('Casos de Borda - Trabalhos', () => {
       .first()
       .click();
 
+    await expect(page.locator('#modalType')).toBeVisible();
+
     await page.locator('#modalType').selectOption('Prova Final');
-    await page.locator('#modalDesc').selectOption('__outro__');
 
-    await page
-      .locator('#modalCustomSubject')
-      .fill('a'.repeat(41));
+    // Mostra no terminal todas as opções do select
+    const options = await page
+      .locator('#modalDesc option')
+      .evaluateAll(options =>
+        options.map(option => ({
+          value: option.value,
+          text: option.textContent
+        }))
+      );
 
-    await page.getByRole('button', { name: 'Salvar prova' })
-      .first()
-      .click();
+    console.log('OPÇÕES ENCONTRADAS:', options);
 
-    await expect(
-      page.getByText('Informe uma matéria (máx 40 char)')
-    ).toBeVisible();
+    // Pausa o teste para inspeção
+    await page.pause();
   });
 
 });

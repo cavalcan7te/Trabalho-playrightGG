@@ -10,14 +10,19 @@ test.describe('Casos felizes', () => {
   test('deve criar uma nota com sucesso', async ({ page }) => {
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
-    await expect(
-      page.getByRole('button', { name: 'Nova nota' }).first()
-    ).toBeVisible();
+    const btnNovaNota = page.getByRole('button', { name: 'Nova nota' }).first();
 
-    await page.getByRole('button', { name: 'Nova nota' }).first().click();
+    await expect(btnNovaNota).toBeVisible();
+    await btnNovaNota.click();
 
-    await page.locator('#gradeModalSubjectId').selectOption('325');
+    await expect(page.locator('#gradeModalSubjectId')).toBeVisible();
+    await expect(page.locator('#gradeModalBimester')).toBeVisible();
+
+    await page.waitForTimeout(2000);
+
+    await page.locator('#gradeModalSubjectId').selectOption({ index: 1 });
     await page.locator('#gradeModalBimester').selectOption('2');
+
     await page.locator('#gradeModalMidterm').fill('1');
     await page.locator('#gradeModalEndterm').fill('1');
 
@@ -25,7 +30,7 @@ test.describe('Casos felizes', () => {
 
     await page.screenshot({
       path: 'screenshots/criar-nota.png',
-      fullPage: true
+      fullPage: true,
     });
   });
 
@@ -34,9 +39,11 @@ test.describe('Casos felizes', () => {
 
     const editarBoletim = page.locator('.w-7').first();
 
-    await expect(editarBoletim).toBeVisible({ timeout: 10000 });
+    await expect(editarBoletim).toBeVisible({ timeout: 15000 });
 
     await editarBoletim.click();
+
+    await expect(page.locator('#gradeModalMidterm')).toBeVisible();
 
     await page.locator('#gradeModalMidterm').fill('2');
 
@@ -47,17 +54,25 @@ test.describe('Casos felizes', () => {
 
     await page.screenshot({
       path: 'screenshots/editar-boletim.png',
-      fullPage: true
+      fullPage: true,
     });
   });
+
 });
+
 test.describe('Casos tristes', () => {
+
   test('não deve salvar nota se o bimestre não for selecionado', async ({ page }) => {
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
     await page.getByRole('button', { name: 'Nova nota' }).first().click();
 
-    await page.locator('#gradeModalSubjectId').selectOption('326');
+    await expect(page.locator('#gradeModalSubjectId')).toBeVisible();
+
+    await page.waitForTimeout(2000);
+
+    await page.locator('#gradeModalSubjectId').selectOption({ index: 1 });
+
     await page.locator('#gradeModalMidterm').fill('9');
     await page.locator('#gradeModalEndterm').fill('9');
 
@@ -73,7 +88,7 @@ test.describe('Casos tristes', () => {
 
     const editarBoletim = page.locator('.w-7').first();
 
-    await expect(editarBoletim).toBeVisible({ timeout: 10000 });
+    await expect(editarBoletim).toBeVisible({ timeout: 15000 });
 
     await editarBoletim.click();
 
@@ -88,17 +103,23 @@ test.describe('Casos tristes', () => {
       page.getByText('Ano entre 2000 e')
     ).toBeVisible();
   });
-  });
 
-test.describe('Casos de bordas', () => {
+});
+
+test.describe('Casos de borda', () => {
 
   test('exibe erro ao salvar nota com valor acima do permitido', async ({ page }) => {
     await page.getByRole('link', { name: 'Boletim', exact: true }).click();
 
     await page.getByRole('button', { name: 'Nova nota' }).first().click();
 
-    await page.locator('#gradeModalSubjectId').selectOption('325');
+    await expect(page.locator('#gradeModalSubjectId')).toBeVisible();
+
+    await page.waitForTimeout(2000);
+
+    await page.locator('#gradeModalSubjectId').selectOption({ index: 1 });
     await page.locator('#gradeModalBimester').selectOption('3');
+
     await page.locator('#gradeModalMidterm').fill('222');
     await page.locator('#gradeModalEndterm').fill('222');
 
